@@ -85,10 +85,6 @@ public class NodeDelegateImpl implements NodeDelegate {
     } catch (ValidateSignatureException e) {
       throw new BadTransactionException();
     } catch (HighFreqException e) {
-<<<<<<<<< Temporary merge branch 1
-      logger.info(e.getMessage());
-=========
->>>>>>>>> Temporary merge branch 2
       e.printStackTrace();
     }
   }
