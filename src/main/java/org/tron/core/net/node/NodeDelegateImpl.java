@@ -24,7 +24,6 @@ import org.tron.core.exception.HighFreqException;
 import org.tron.core.exception.UnLinkedBlockException;
 import org.tron.core.exception.UnReachBlockException;
 import org.tron.core.exception.ValidateSignatureException;
-import org.tron.core.exception.HighFreqException;
 import org.tron.core.net.message.BlockMessage;
 import org.tron.core.net.message.Message;
 import org.tron.core.net.message.MessageTypes;
@@ -121,7 +120,8 @@ public class NodeDelegateImpl implements NodeDelegate {
 
     //todo: limit the count of block to send peer by one time.
     long unForkedBlockIdNum = unForkedBlockId.getNum();
-    long len = Longs.min(dbManager.getHeadBlockNum(), unForkedBlockIdNum +NodeConstant.SYNC_FETCH_BATCH_NUM);
+    long len = Longs
+        .min(dbManager.getHeadBlockNum(), unForkedBlockIdNum + NodeConstant.SYNC_FETCH_BATCH_NUM);
     return LongStream.rangeClosed(unForkedBlockIdNum, len)
         .filter(num -> num > 0)
         .mapToObj(num -> dbManager.getBlockIdByNum(num))
