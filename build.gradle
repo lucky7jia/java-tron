@@ -168,10 +168,6 @@ sourceSets {
 
 }
 
-//protobuf.protoc {
-//    artifact = 'com.google.protobuf:protoc:3.4.0'
-//}
-
 protobuf {
     generatedFilesBaseDir = "$projectDir/src/"
     protoc {
@@ -207,4 +203,10 @@ shadowJar {
     baseName = 'java-tron'
     classifier = null
     version = null
+}
+
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
 }

@@ -48,7 +48,7 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
       //subtract from owner address
       byte[] ownerAddressBytes = participateAssetIssueContract.getOwnerAddress().toByteArray();
       AccountCapsule ownerAccount = this.dbManager.getAccountStore().get(ownerAddressBytes);
-      ownerAccount.setBalance(ownerAccount.getBalance() - cost);
+      ownerAccount.setBalance(ownerAccount.getBalance() - cost - fee);
 
       //calculate the exchange amount
       AssetIssueCapsule assetIssueCapsule =
@@ -89,8 +89,8 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
           .checkNotNull(participateAssetIssueContract.getOwnerAddress(), "OwnerAddress is null");
       Preconditions.checkNotNull(participateAssetIssueContract.getToAddress(), "ToAddress is null");
       Preconditions.checkNotNull(participateAssetIssueContract.getAssetName(), "trx name is null");
-      if (participateAssetIssueContract.getAmount() < 0) {
-        throw new ContractValidateException("Trx Num can not be negative!");
+      if (participateAssetIssueContract.getAmount() <= 0) {
+        throw new ContractValidateException("Trx Num must be positive!");
       }
 
       byte[] addressBytes = participateAssetIssueContract.getOwnerAddress().toByteArray();
@@ -100,8 +100,9 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
       }
 
       AccountCapsule ac = this.dbManager.getAccountStore().get(addressBytes);
+      long fee = calcFee();
       //Whether the balance is enough
-      if (ac.getBalance() < participateAssetIssueContract.getAmount()) {
+      if (ac.getBalance() < participateAssetIssueContract.getAmount() + fee) {
         throw new ContractValidateException();
       }
 
@@ -125,7 +126,8 @@ public class ParticipateAssetIssueActuator extends AbstractActuator {
       int num = assetIssueCapsule.getNum();
       long exchangeAmount = cost / trxNum * num;
       float preciseExchangeAmount = (float) cost / (float) trxNum * (float) num;
-      if (preciseExchangeAmount - exchangeAmount >= 0.000001f) {
+      if (preciseExchangeAmount - exchangeAmount >= 0.000001f
+          || preciseExchangeAmount - exchangeAmount <= -0.000001f) {
         throw new ContractValidateException("Can not process the exchange!");
       }
     } catch (InvalidProtocolBufferException e) {
